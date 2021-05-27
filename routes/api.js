@@ -65,12 +65,6 @@ router.post('/submit', async function(req, res, next) {
         };
     }
 
-    // Cache the lookup
-    global.db.set(
-        Buffer.from(body['target']['url']).toString('base64'),
-        JSON.stringify(body)
-    );
-
     // And respond
     body['success'] = true;
     res.json(body);
