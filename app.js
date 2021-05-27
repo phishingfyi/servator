@@ -49,6 +49,7 @@ try {
  */
 global.db = r;
 global.config = {
+    'ttl': process.env.REDIS_TTL || 300,
     'urlscan': program.opts().urlscan
 };
 

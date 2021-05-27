@@ -8,6 +8,14 @@ const servers = [
 
 const DNS = {
     lookup: async(hostname, rrtype = "A") => {
+        // Check the cache
+        let cacheKey = `/dns/${Buffer.from(hostname).toString('base64')}/${rrtype}`;
+        global.db.get(cacheKey, function(err, reply) {
+            if (reply) {
+                return JSON.parse(reply)['data'];
+            }
+        });
+
         let endpoint = servers[Math.floor(Math.random() * servers.length)];
         const res = await axios.get(endpoint, {
             params: {
@@ -26,6 +34,13 @@ const DNS = {
                 rec.push(a['data']);
             }
         }
+
+        // Save to cache
+        global.db.set(cacheKey, JSON.stringify({
+            'data': rec
+        }));
+        global.db.expire(cacheKey, global.config['ttl']);
+
         return rec;
     },
 };
