@@ -27,7 +27,7 @@ const Urlscan = {
 
         // Save to cache
         global.db.set(cacheKey, JSON.stringify(data));
-        global.db.expire(cacheKey, 604800);
+        global.db.expire(cacheKey, global.config['ttl']);
 
         return data;
     },

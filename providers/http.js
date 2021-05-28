@@ -21,7 +21,7 @@ const Http = {
         global.db.set(cacheKey, JSON.stringify({
             'data': data
         }));
-        global.db.expire(cacheKey, 604800);
+        global.db.expire(cacheKey, global.config['ttl']);
 
         return Buffer.from(data).toString('base64');
     },
