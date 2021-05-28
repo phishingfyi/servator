@@ -4,6 +4,7 @@ import validator from "validator";
 import AbuseDB from "../providers/abusedb.js";
 import DNS from "../providers/dns.js";
 import Http from "../providers/http.js";
+import IpApi from "../providers/ipapi.js";
 import Urlscan from "../providers/urlscan.js";
 
 var router = express.Router();
@@ -41,7 +42,7 @@ router.post('/submit', async function(req, res, next) {
     }
 
     // Now, let's do a DNS lookup (unless not specified)
-    if (checks.includes('dns') || checks.includes('abusedb')) {
+    if (checks.includes('dns')) {
         body['dns'] = [];
         let types = ['A', 'AAAA'];
 
@@ -53,7 +54,7 @@ router.post('/submit', async function(req, res, next) {
 
     // Now, let's do a scan with findabuse.email (unless not specified)
     if (checks.includes('abusedb')) {
-        let abusedb = await AbuseDB.lookup(body['dns']);
+        let abusedb = await AbuseDB.lookup(body["target"]["hostname"]);
         body['abusedb'] = abusedb;
     }
 
@@ -62,6 +63,14 @@ router.post('/submit', async function(req, res, next) {
         if (!global.config['urlscan'] == '') {
             let urlscan = await Urlscan.lookup(global.config['urlscan'], body["target"]["url"]);
             body['urlscan'] = urlscan;
+        };
+    }
+
+    // Now, let's do a scan with ip-api.com (unless not specified)
+    if (checks.includes('ipapi')) {
+        if (!global.config['ipapi'] == '') {
+            let ipapi = await IpApi.lookup(body["target"]["hostname"]);
+            body['ipapi'] = ipapi;
         };
     }
 

@@ -13,6 +13,7 @@ program
     .option('-h, --host <host>', 'host for servator to listen on', process.env.HOST || '127.0.0.1')
     .option('-p, --port <port>', 'port for servator to listen on', process.env.PORT || 3000)
     .option('-u, --urlscan <token>', 'urlscan.io token for scans', process.env.URLSCAN || '')
+    .option('-i, --ipapi <token>', 'ip-api.com api token', process.env.IPAPI || '')
     .option('-r, --redis <url>', 'redis connection string', process.env.REDIS || '');
 program.parse();
 
@@ -49,7 +50,8 @@ try {
  */
 global.db = r;
 global.config = {
-    'ttl': process.env.REDIS_TTL || 300,
+    'ttl': process.env.REDIS_TTL || 3600,
+    'ipapi': program.opts().ipapi,
     'urlscan': program.opts().urlscan
 };
 
