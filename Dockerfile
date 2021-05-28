@@ -3,8 +3,7 @@ FROM node:alpine
 WORKDIR /app
 COPY . /app
 
-RUN apk add --update npm && \
-    rm -rf /var/cache/apk/* && \
+RUN apk add --no-cache --update npm && \
     npm install
 
 EXPOSE 3000
