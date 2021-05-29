@@ -5,6 +5,7 @@ import AbuseDB from "../providers/abusedb.js";
 import DNS from "../providers/dns.js";
 import Http from "../providers/http.js";
 import IpApi from "../providers/ipapi.js";
+import IpInfo from "../providers/ipinfo.js";
 import Urlscan from "../providers/urlscan.js";
 
 var router = express.Router();
@@ -72,6 +73,12 @@ router.post('/submit', async function(req, res, next) {
             let ipapi = await IpApi.lookup(body["target"]["hostname"]);
             body['ipapi'] = ipapi;
         };
+    }
+
+    // Now, let's do a scan with ipinfo.io (unless not specified)
+    if (checks.includes('ipinfo')) {
+        let ipinfo = await IpInfo.lookup(body["target"]["hostname"]);
+        body['ipinfo'] = ipinfo;
     }
 
     // And respond
