@@ -44,13 +44,8 @@ router.post('/submit', async function(req, res, next) {
 
     // Now, let's do a DNS lookup (unless not specified)
     if (checks.includes('dns')) {
-        body['dns'] = [];
-        let types = ['A', 'AAAA'];
-
-        for (let r of types) {
-            let dns = await DNS.lookup(body["target"]["hostname"], r);
-            body['dns'] = [...body['dns'], ...dns];
-        }
+        let dns = await DNS.fetch(body["target"]["hostname"]);
+        body['dns'] = dns;
     }
 
     // Now, let's do a scan with findabuse.email (unless not specified)

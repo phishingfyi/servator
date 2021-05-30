@@ -7,6 +7,15 @@ const servers = [
 ];
 
 const DNS = {
+    fetch: async(hostname) => {
+        let rrtypes = ['A', 'AAAA'];
+        let res = []
+        for (let r of rrtypes) {
+            let dns = await DNS.lookup(hostname, r);
+            res = [...res, ...dns];
+        }
+        return res;
+    },
     lookup: async(hostname, rrtype = "A") => {
         // Check the cache
         let cacheKey = `/dns/${Buffer.from(hostname).toString('base64')}/${rrtype}`;
