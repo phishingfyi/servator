@@ -1,13 +1,10 @@
 import axios from "axios";
 import DNS from "./dns.js";
 
-const endpoint = 'https://api.spur.us/v1'
+const endpoint = 'https://api.spur.us/v1';
 
 const Spur = {
     lookup: async(hostname) => {
-        // Check the cache
-        let cacheKey = `/spur/${Buffer.from(hostname).toString('base64')}`;
-
         // Now we resolve the hostname
         let addr = [];
         let types = ['A', 'AAAA'];
@@ -22,30 +19,33 @@ const Spur = {
 
         if (addr.length > 0) {
             for (let i of addr) {
+                let cached = false;
                 global.db.get(`/spur/${i}`, function(err, reply) {
                     if (reply) {
+                        cached = true;
                         out[i] = JSON.parse(reply);
-                    } else {
-                        let res = await axios.get(`${endpoint}/context/${i}`, {
-                            headers: {
-                                "User-Agent": "phishing.fyi/servator",
-                                "Accept": "application/json",
-                                "Token": global.config['spur']
-                            }
-                        })
-                        res = (await res).data;
-
-                        // Save to cache
-                        global.db.set(cacheKey, JSON.stringify(out));
-                        global.db.expire(cacheKey, 604800);
-
-                        out[i] = res;
                     }
                 });
-            }
-        }
 
-        return out;
+                if (!cached) {
+                    let res = await axios.get(`${endpoint}/context/${i}`, {
+                        headers: {
+                            "User-Agent": "phishing.fyi/servator",
+                            "Accept": "application/json",
+                            "Token": global.config['spur']
+                        }
+                    });
+                    res = (await res).data;
+
+                    // Save to cache
+                    global.db.set(`/spur/${i}`, JSON.stringify(out));
+                    global.db.expire(`/spur/${i}`, 604800);
+
+                    out[i] = res;
+                }
+            };
+            return out;
+        };
     },
 };
 
