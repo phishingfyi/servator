@@ -7,11 +7,6 @@ const Spur = {
     lookup: async(hostname) => {
         // Check the cache
         let cacheKey = `/spur/${Buffer.from(hostname).toString('base64')}`;
-        global.db.get(cacheKey, function(err, reply) {
-            if (reply) {
-                return JSON.parse(reply);
-            }
-        });
 
         // Now we resolve the hostname
         let addr = [];
@@ -27,21 +22,28 @@ const Spur = {
 
         if (addr.length > 0) {
             for (let i of addr) {
-                let res = await axios.get(`${endpoint}/context/${i}`, {
-                    headers: {
-                        "User-Agent": "phishing.fyi/servator",
-                        "Accept": "application/json",
-                        "Token": global.config['spur']
+                global.db.get(`/spur/${i}`, function(err, reply) {
+                    if (reply) {
+                        out[i] = JSON.parse(reply);
+                    } else {
+                        let res = await axios.get(`${endpoint}/context/${i}`, {
+                            headers: {
+                                "User-Agent": "phishing.fyi/servator",
+                                "Accept": "application/json",
+                                "Token": global.config['spur']
+                            }
+                        })
+                        res = (await res).data;
+
+                        // Save to cache
+                        global.db.set(cacheKey, JSON.stringify(out));
+                        global.db.expire(cacheKey, 604800);
+
+                        out[i] = res;
                     }
-                })
-                res = (await res).data;
-                out[i] = res;
+                });
             }
         }
-
-        // Save to cache
-        global.db.set(cacheKey, JSON.stringify(out));
-        global.db.expire(cacheKey, global.config['ttl']);
 
         return out;
     },
