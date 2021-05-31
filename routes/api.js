@@ -76,6 +76,8 @@ router.post('/submit', async function(req, res, next) {
         if (!global.config['spur'] == '') {
             let spur = await Spur.lookup(body["target"]["hostname"]);
             body['spur'] = spur;
+        } else {
+            body['spur'] = `Unable to check spur.us. Set SPUR to your API token, and restart servator`
         };
     }
 
