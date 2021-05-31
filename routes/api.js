@@ -6,6 +6,7 @@ import DNS from "../providers/dns.js";
 import Http from "../providers/http.js";
 import IpApi from "../providers/ipapi.js";
 import IpInfo from "../providers/ipinfo.js";
+import Spur from "../providers/spur.js";
 import Urlscan from "../providers/urlscan.js";
 
 var router = express.Router();
@@ -67,6 +68,14 @@ router.post('/submit', async function(req, res, next) {
         if (!global.config['ipapi'] == '') {
             let ipapi = await IpApi.lookup(body["target"]["hostname"]);
             body['ipapi'] = ipapi;
+        };
+    }
+
+    // Now, let's do a scan with spur.us (unless not specified)
+    if (checks.includes('spur')) {
+        if (!global.config['spur'] == '') {
+            let spur = await Spur.lookup(body["target"]["hostname"]);
+            body['spur'] = spur;
         };
     }
 
