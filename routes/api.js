@@ -70,6 +70,8 @@ router.post('/submit', async function(req, res, next) {
         if (!global.config['ipapi'] == '') {
             let ipapi = await IpApi.lookup(body["target"]["hostname"]);
             body['ipapi'] = ipapi;
+        } else {
+            body['ipapi'] = `Unable to check ip-api.com. Set IPAPI to your API token, and restart servator`
         };
     }
 
