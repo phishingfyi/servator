@@ -58,8 +58,10 @@ router.post('/submit', async function(req, res, next) {
     // Now, let's do a scan with urlscan.io (unless not specified)
     if (checks.includes('urlscan')) {
         if (!global.config['urlscan'] == '') {
-            let urlscan = await Urlscan.lookup(global.config['urlscan'], body["target"]["url"]);
+            let urlscan = await Urlscan.lookup(body["target"]["url"]);
             body['urlscan'] = urlscan;
+        } else {
+            body['urlscan'] = `Unable to check urlscan.io. Set URLSCAN to your API token, and restart servator`
         };
     }
 

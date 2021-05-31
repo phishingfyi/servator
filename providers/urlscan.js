@@ -3,7 +3,7 @@ import axios from "axios";
 const endpoint = "https://urlscan.io/api/v1";
 
 const Urlscan = {
-    lookup: async(token, url, visibility = 'unlisted', tags = 'phishing.fyi') => {
+    lookup: async(url, visibility = 'unlisted', tags = 'phishing.fyi') => {
         // Check the cache
         let cacheKey = `/urlscan/${Buffer.from(url).toString('base64')}`;
         global.db.get(cacheKey, function(err, reply) {
@@ -19,7 +19,7 @@ const Urlscan = {
         };
         const res = await axios.post(`${endpoint}/scan`, payload, {
             headers: {
-                'API-Key': token,
+                'API-Key': global.config['urlscan'],
                 'Content-Type': 'application/json'
             },
         });
