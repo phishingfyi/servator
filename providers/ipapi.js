@@ -1,7 +1,7 @@
 import axios from "axios";
 import DNS from "./dns.js";
 
-const endpoint = 'https://pro.ip-api.com'
+const endpoint = 'https://pro.ip-api.com';
 
 const IpApi = {
     lookup: async(hostname) => {
