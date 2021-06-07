@@ -1,5 +1,6 @@
 import express from "express";
 import redis from "redis";
+import morgan from "morgan";
 import { program } from "commander";
 const app = express();
 
@@ -26,6 +27,7 @@ if (program.opts().redis == '') {
 /**
  * POST DEFINITIONS
  */
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
